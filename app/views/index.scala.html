@@ -1,0 +1,27 @@
+@(message: String)
+
+@main("My Awesome Title")	{
+@defining( Array("a","b","c","d","e","f","g","h"), Array("white", "black") ) { case (rank, color) =>
+
+	<div class="board">
+		
+		@for(y <- 0 to 7) {
+			<div class="board-row">
+				<div class="board-rank">@rank(y)</div>
+				
+				@for(x <- 0 to 7) {
+					<div id="@rank(y)@(x+1)" class="board-square @color( ((2*y+x) + y%2) % 2  )"></div>
+				}
+			</div>
+		}
+		
+		<div class="board-file-row">
+			<div class="board-rank"></div>
+			
+			@for(x <- 1 to 8) {
+				<div class="board-file">@x</div>
+			}
+		</div>
+	</div>
+}
+}
