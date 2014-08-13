@@ -5,7 +5,6 @@ import play.mvc.*;
 
 import views.html.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Chess extends Controller
@@ -13,6 +12,11 @@ public class Chess extends Controller
 	
 	public static Result index()
 	{
+		Game game = new Game();
+		games.put("" + count, game);
+
+		session("game", "" + count++);
+
 		return ok( chess.render() );
 	}
 
@@ -23,15 +27,11 @@ public class Chess extends Controller
 			// Called when the Websocket Handshake is done.
 			public void onReady(WebSocket.In<String> in, final WebSocket.Out<String> out)
 			{
-				Game game = new Game();
-				games.put("" + count, game);
-				
-				session("game", "" + count++);
-				
 				in.onMessage(new Callback<String>()
 				{
 					public void invoke(String event)
 					{
+						System.out.println("invoke");
 						if( event.equals("setup") )
 						{
 							out.write("set:h1=br,h2=bn,h3=bb,h4=bq,h5=bk,h6=bb,h7=bn,h8=br," +
@@ -41,7 +41,11 @@ public class Chess extends Controller
 						}
 						else
 						{
+							System.out.println(event);
+							System.out.println( session("game") );
+							Game game = Chess.games.get(0/*session("game")*/);
 							
+							//game.dump();
 						}
 					}
 				});
@@ -61,7 +65,35 @@ public class Chess extends Controller
 	
 	private static class Game
 	{
+		public static class Piece
+		{
+			
+		}
+
+		public static class Board
+		{
+			public String toString()
+			{
+				String res = "[";
+				
+				for(Piece[] row : squares)
+				{
+					for(Piece square : row)
+						res += (square == null) ? "(null)" : square;
+				}
+				
+				return res + "]";
+			}
+			
+			private Piece[][] squares = new Piece[8][8];
+		}
 		
+		public void dump()
+		{
+			System.out.println( board.toString() );
+		}
+		
+		private Board board;
 	}
 	
 	private static int count;
